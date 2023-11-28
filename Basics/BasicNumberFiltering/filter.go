@@ -13,7 +13,7 @@ func FilterEven(inp []int) []int {
 func FilterOdd(inp []int) []int {
 	res := []int{}
 	for _, num := range inp {
-		if !isEven(num) {
+		if isOdd(num) {
 			res = append(res, num)
 		}
 	}
@@ -30,10 +30,24 @@ func FilterPrime(inp []int) []int {
 	return res
 }
 
+func FilterOddPrime(inp []int) []int {
+	res := []int{}
+	for _, num := range inp {
+		if isPrime(num) && isOdd(num) {
+			res = append(res, num)
+		}
+	}
+	return res
+}
+
 /**** Helpers ****/
 
 func isEven(num int) bool {
 	return (num & 1) == 0
+}
+
+func isOdd(num int) bool {
+	return !isEven(num)
 }
 
 func isPrime(num int) bool {

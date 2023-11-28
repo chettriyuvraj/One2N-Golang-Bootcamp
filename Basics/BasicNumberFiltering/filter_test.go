@@ -28,6 +28,16 @@ func TestFilterPrime(t *testing.T) {
 	want := []int{2, 3, 5, 7, 13}
 
 	if !CompareSlicesInt(got, want) {
-		t.Errorf("filter odd numbers from %v; wanted %v; got %v", sample, want, got)
+		t.Errorf("filter prime numbers from %v; wanted %v; got %v", sample, want, got)
+	}
+}
+
+func TestFilterPrimeOdd(t *testing.T) {
+	sample := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
+	got := FilterOddPrime(sample)
+	want := []int{3, 5, 7, 11}
+
+	if !CompareSlicesInt(got, want) {
+		t.Errorf("filter odd prime numbers from %v; wanted %v; got %v", sample, want, got)
 	}
 }
