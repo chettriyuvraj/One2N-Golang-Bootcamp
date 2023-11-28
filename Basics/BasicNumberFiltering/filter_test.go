@@ -41,3 +41,13 @@ func TestFilterPrimeOdd(t *testing.T) {
 		t.Errorf("filter odd prime numbers from %v; wanted %v; got %v", sample, want, got)
 	}
 }
+
+func TestFilterEvenMultipleOfFive(t *testing.T) {
+	sample := []int{2, 5, 10, 15, 20}
+	got := FilterEvenMultipleOfFive(sample)
+	want := []int{10, 20}
+
+	if !CompareSlicesInt(got, want) {
+		t.Errorf("filter even multiple of five from %v; wanted %v; got %v", sample, want, got)
+	}
+}

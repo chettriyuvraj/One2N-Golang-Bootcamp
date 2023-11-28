@@ -40,6 +40,16 @@ func FilterOddPrime(inp []int) []int {
 	return res
 }
 
+func FilterEvenMultipleOfFive(inp []int) []int {
+	res := []int{}
+	for _, num := range inp {
+		if isEven(num) && isMultipleOfFive(num) {
+			res = append(res, num)
+		}
+	}
+	return res
+}
+
 /**** Helpers ****/
 
 func isEven(num int) bool {
@@ -61,6 +71,10 @@ func isPrime(num int) bool {
 		}
 	}
 	return true
+}
+
+func isMultipleOfFive(num int) bool {
+	return num%5 == 0
 }
 
 func CompareSlicesInt(slice1 []int, slice2 []int) bool {
