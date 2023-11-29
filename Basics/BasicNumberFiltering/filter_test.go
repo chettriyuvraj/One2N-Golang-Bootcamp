@@ -32,6 +32,28 @@ func TestFilterPrime(t *testing.T) {
 	}
 }
 
+func TestFilterMultipleOfFive(t *testing.T) {
+	sample := []int{1, 2, 3, 5, 7, 9, 10, 13}
+	got := FilterMultipleOfFive(sample)
+	want := []int{5, 10}
+
+	if !CompareSlicesInt(got, want) {
+		t.Errorf("filter multiples of five from %v; wanted %v; got %v", sample, want, got)
+	}
+}
+
+func TestFilterMultipleOfThree(t *testing.T) {
+	sample := []int{1, 2, 3, 5, 7, 9, 10, 13}
+	got := FilterMultipleOfThree(sample)
+	want := []int{3, 9}
+
+	if !CompareSlicesInt(got, want) {
+		t.Errorf("filter multiples of three from %v; wanted %v; got %v", sample, want, got)
+	}
+}
+
+/**** Composite Tests ****/
+
 func TestFilterPrimeOdd(t *testing.T) {
 	sample := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
 	got := FilterOddPrime(sample)

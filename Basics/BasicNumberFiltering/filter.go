@@ -1,5 +1,7 @@
 package main
 
+/**** Filters ****/
+
 func FilterEven(inp []int) []int {
 	return FilterByFunc(inp, isEven)
 }
@@ -11,6 +13,18 @@ func FilterOdd(inp []int) []int {
 func FilterPrime(inp []int) []int {
 	return FilterByFunc(inp, isPrime)
 }
+
+/**** Filters not technically needed, only for testing ****/
+
+func FilterMultipleOfFive(inp []int) []int {
+	return FilterByFunc(inp, isMultipleOfFive)
+}
+
+func FilterMultipleOfThree(inp []int) []int {
+	return FilterByFunc(inp, isMultipleOfThree)
+}
+
+/**** Composite Filters ****/
 
 func FilterOddPrime(inp []int) []int {
 	return FilterByFunc(inp, isOddPrime)
@@ -45,6 +59,10 @@ func isPrime(num int) bool {
 
 func isMultipleOfFive(num int) bool {
 	return num%5 == 0
+}
+
+func isMultipleOfThree(num int) bool {
+	return num%3 == 0
 }
 
 /**** Composite Helpers ****/
