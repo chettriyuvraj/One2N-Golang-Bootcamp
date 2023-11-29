@@ -1,53 +1,23 @@
 package main
 
 func FilterEven(inp []int) []int {
-	res := []int{}
-	for _, num := range inp {
-		if isEven(num) {
-			res = append(res, num)
-		}
-	}
-	return res
+	return FilterByFunc(inp, isEven)
 }
 
 func FilterOdd(inp []int) []int {
-	res := []int{}
-	for _, num := range inp {
-		if isOdd(num) {
-			res = append(res, num)
-		}
-	}
-	return res
+	return FilterByFunc(inp, isOdd)
 }
 
 func FilterPrime(inp []int) []int {
-	res := []int{}
-	for _, num := range inp {
-		if isPrime(num) {
-			res = append(res, num)
-		}
-	}
-	return res
+	return FilterByFunc(inp, isPrime)
 }
 
 func FilterOddPrime(inp []int) []int {
-	res := []int{}
-	for _, num := range inp {
-		if isOddPrime(num) {
-			res = append(res, num)
-		}
-	}
-	return res
+	return FilterByFunc(inp, isOddPrime)
 }
 
 func FilterEvenMultipleOfFive(inp []int) []int {
-	res := []int{}
-	for _, num := range inp {
-		if isEvenMultipleOfFive(num) {
-			res = append(res, num)
-		}
-	}
-	return res
+	return FilterByFunc(inp, isEvenMultipleOfFive)
 }
 
 /**** Helpers ****/
@@ -100,4 +70,14 @@ func CompareSlicesInt(slice1 []int, slice2 []int) bool {
 		}
 	}
 	return true
+}
+
+func FilterByFunc(inp []int, f func(n int) bool) []int {
+	res := []int{}
+	for _, num := range inp {
+		if f(num) {
+			res = append(res, num)
+		}
+	}
+	return res
 }
