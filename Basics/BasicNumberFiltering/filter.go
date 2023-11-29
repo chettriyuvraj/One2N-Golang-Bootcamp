@@ -3,39 +3,39 @@ package main
 /**** Filters ****/
 
 func FilterEven(inp []int) []int {
-	return FilterByFuncs(inp, isEven)
+	return FilterByFuncsMatchAll(inp, isEven)
 }
 
 func FilterOdd(inp []int) []int {
-	return FilterByFuncs(inp, isOdd)
+	return FilterByFuncsMatchAll(inp, isOdd)
 }
 
 func FilterPrime(inp []int) []int {
-	return FilterByFuncs(inp, isPrime)
+	return FilterByFuncsMatchAll(inp, isPrime)
 }
 
 /**** Composite Filters ****/
 
 func FilterOddPrime(inp []int) []int {
-	return FilterByFuncs(inp, isOdd, isPrime)
+	return FilterByFuncsMatchAll(inp, isOdd, isPrime)
 }
 
 func FilterEvenMultiplesOfFive(inp []int) []int {
-	return FilterByFuncs(inp, isEven, isMultipleOfFive)
+	return FilterByFuncsMatchAll(inp, isEven, isMultipleOfFive)
 }
 
 func FilterOddMultiplesOfThreeGreaterThanTen(inp []int) []int {
-	return FilterByFuncs(inp, isOdd, isMultipleOfThree, isGreaterThanTen)
+	return FilterByFuncsMatchAll(inp, isOdd, isMultipleOfThree, isGreaterThanTen)
 }
 
 /**** Filters not technically needed, only for testing ****/
 
 func FilterMultipleOfFive(inp []int) []int {
-	return FilterByFuncs(inp, isMultipleOfFive)
+	return FilterByFuncsMatchAll(inp, isMultipleOfFive)
 }
 
 func FilterMultipleOfThree(inp []int) []int {
-	return FilterByFuncs(inp, isMultipleOfThree)
+	return FilterByFuncsMatchAll(inp, isMultipleOfThree)
 }
 
 /**** Helpers ****/
@@ -88,7 +88,7 @@ func CompareSlicesInt(slice1 []int, slice2 []int) bool {
 	return true
 }
 
-func FilterByFuncs(inp []int, fList ...func(n int) bool) []int {
+func FilterByFuncsMatchAll(inp []int, fList ...func(n int) bool) []int {
 	res := []int{}
 	for _, num := range inp {
 		satisfiesAllFuncs := true
@@ -100,6 +100,19 @@ func FilterByFuncs(inp []int, fList ...func(n int) bool) []int {
 		}
 		if satisfiesAllFuncs {
 			res = append(res, num)
+		}
+	}
+	return res
+}
+
+func FilterByFuncsMatchAny(inp []int, fList ...func(n int) bool) []int {
+	res := []int{}
+	for _, num := range inp {
+		for _, f := range fList {
+			if f(num) {
+				res = append(res, num)
+				break
+			}
 		}
 	}
 	return res

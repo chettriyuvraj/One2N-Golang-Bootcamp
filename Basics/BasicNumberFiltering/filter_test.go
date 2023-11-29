@@ -83,3 +83,29 @@ func TestOddMultiplesOfThreeGreaterThanTen(t *testing.T) {
 		t.Errorf("filter odd multiples of three greater than ten from %v; wanted %v; got %v", sample, want, got)
 	}
 }
+
+/**** Match All and Match Any Tests ****/
+
+func TestFilterByFuncsMatchAll(t *testing.T) {
+	t.Run("match all numbers greater than 10 and prime", func(t *testing.T) {
+		sample := []int{2, 5, 10, 11, 23, 15, 21, 32}
+		got := FilterByFuncsMatchAll(sample, isGreaterThanTen, isPrime)
+		want := []int{11, 23}
+
+		if !CompareSlicesInt(got, want) {
+			t.Errorf("filter numbers greater than 10 AND prime from %v; wanted %v; got %v", sample, want, got)
+		}
+	})
+}
+
+func TestFilterByFuncsMatchAny(t *testing.T) {
+	t.Run("match all numbers greater than 10 or prime", func(t *testing.T) {
+		sample := []int{1, 4, 8, 5, 10, 11, 23, 15, 21, 32}
+		got := FilterByFuncsMatchAny(sample, isGreaterThanTen, isPrime)
+		want := []int{5, 11, 23, 15, 21, 32}
+
+		if !CompareSlicesInt(got, want) {
+			t.Errorf("filter numbers greater than 10 OR prime from %v; wanted %v; got %v", sample, want, got)
+		}
+	})
+}
