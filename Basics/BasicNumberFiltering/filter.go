@@ -3,39 +3,39 @@ package main
 /**** Filters ****/
 
 func FilterEven(inp []int) []int {
-	return FilterByFunc(inp, isEven)
+	return FilterByFuncs(inp, isEven)
 }
 
 func FilterOdd(inp []int) []int {
-	return FilterByFunc(inp, isOdd)
+	return FilterByFuncs(inp, isOdd)
 }
 
 func FilterPrime(inp []int) []int {
-	return FilterByFunc(inp, isPrime)
-}
-
-/**** Filters not technically needed, only for testing ****/
-
-func FilterMultipleOfFive(inp []int) []int {
-	return FilterByFunc(inp, isMultipleOfFive)
-}
-
-func FilterMultipleOfThree(inp []int) []int {
-	return FilterByFunc(inp, isMultipleOfThree)
+	return FilterByFuncs(inp, isPrime)
 }
 
 /**** Composite Filters ****/
 
 func FilterOddPrime(inp []int) []int {
-	return FilterByFunc(inp, isOddPrime)
+	return FilterByFuncs(inp, isOdd, isPrime)
 }
 
 func FilterEvenMultiplesOfFive(inp []int) []int {
-	return FilterByFunc(inp, isEvenMultipleOfFive)
+	return FilterByFuncs(inp, isEven, isMultipleOfFive)
 }
 
 func FilterOddMultiplesOfThreeGreaterThanTen(inp []int) []int {
-	return FilterByFunc(inp, isOddMultipleOfThreeGreaterThanTen)
+	return FilterByFuncs(inp, isOdd, isMultipleOfThree, isGreaterThanTen)
+}
+
+/**** Filters not technically needed, only for testing ****/
+
+func FilterMultipleOfFive(inp []int) []int {
+	return FilterByFuncs(inp, isMultipleOfFive)
+}
+
+func FilterMultipleOfThree(inp []int) []int {
+	return FilterByFuncs(inp, isMultipleOfThree)
 }
 
 /**** Helpers ****/
@@ -73,20 +73,6 @@ func isGreaterThanTen(num int) bool {
 	return num > 10
 }
 
-/**** Composite Helpers ****/
-
-func isOddPrime(num int) bool {
-	return isOdd(num) && isPrime(num)
-}
-
-func isEvenMultipleOfFive(num int) bool {
-	return isEven(num) && isMultipleOfFive(num)
-}
-
-func isOddMultipleOfThreeGreaterThanTen(num int) bool {
-	return isOdd(num) && isMultipleOfThree(num) && isGreaterThanTen(num)
-}
-
 /**** Misc Helpers ****/
 
 func CompareSlicesInt(slice1 []int, slice2 []int) bool {
@@ -102,10 +88,17 @@ func CompareSlicesInt(slice1 []int, slice2 []int) bool {
 	return true
 }
 
-func FilterByFunc(inp []int, f func(n int) bool) []int {
+func FilterByFuncs(inp []int, fList ...func(n int) bool) []int {
 	res := []int{}
 	for _, num := range inp {
-		if f(num) {
+		satisfiesAllFuncs := true
+		for _, f := range fList {
+			if !f(num) {
+				satisfiesAllFuncs = false
+				break
+			}
+		}
+		if satisfiesAllFuncs {
 			res = append(res, num)
 		}
 	}
