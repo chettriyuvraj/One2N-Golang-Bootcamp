@@ -64,12 +64,22 @@ func TestFilterPrimeOdd(t *testing.T) {
 	}
 }
 
-func TestFilterEvenMultipleOfFive(t *testing.T) {
+func TestFilterEvenMultiplesOfFive(t *testing.T) {
 	sample := []int{2, 5, 10, 15, 20}
-	got := FilterEvenMultipleOfFive(sample)
+	got := FilterEvenMultiplesOfFive(sample)
 	want := []int{10, 20}
 
 	if !CompareSlicesInt(got, want) {
 		t.Errorf("filter even multiple of five from %v; wanted %v; got %v", sample, want, got)
+	}
+}
+
+func TestOddMultiplesOfThreeGreaterThanTen(t *testing.T) {
+	sample := []int{2, 5, 10, 15, 21, 32}
+	got := FilterOddMultiplesOfThreeGreaterThanTen(sample)
+	want := []int{15, 21}
+
+	if !CompareSlicesInt(got, want) {
+		t.Errorf("filter odd multiples of three greater than ten from %v; wanted %v; got %v", sample, want, got)
 	}
 }

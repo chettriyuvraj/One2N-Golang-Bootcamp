@@ -30,8 +30,12 @@ func FilterOddPrime(inp []int) []int {
 	return FilterByFunc(inp, isOddPrime)
 }
 
-func FilterEvenMultipleOfFive(inp []int) []int {
+func FilterEvenMultiplesOfFive(inp []int) []int {
 	return FilterByFunc(inp, isEvenMultipleOfFive)
+}
+
+func FilterOddMultiplesOfThreeGreaterThanTen(inp []int) []int {
+	return FilterByFunc(inp, isOddMultipleOfThreeGreaterThanTen)
 }
 
 /**** Helpers ****/
@@ -65,6 +69,10 @@ func isMultipleOfThree(num int) bool {
 	return num%3 == 0
 }
 
+func isGreaterThanTen(num int) bool {
+	return num > 10
+}
+
 /**** Composite Helpers ****/
 
 func isOddPrime(num int) bool {
@@ -73,6 +81,10 @@ func isOddPrime(num int) bool {
 
 func isEvenMultipleOfFive(num int) bool {
 	return isEven(num) && isMultipleOfFive(num)
+}
+
+func isOddMultipleOfThreeGreaterThanTen(num int) bool {
+	return isOdd(num) && isMultipleOfThree(num) && isGreaterThanTen(num)
 }
 
 /**** Misc Helpers ****/
