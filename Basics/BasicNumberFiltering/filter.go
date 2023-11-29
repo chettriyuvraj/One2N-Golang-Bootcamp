@@ -33,7 +33,7 @@ func FilterPrime(inp []int) []int {
 func FilterOddPrime(inp []int) []int {
 	res := []int{}
 	for _, num := range inp {
-		if isPrime(num) && isOdd(num) {
+		if isOddPrime(num) {
 			res = append(res, num)
 		}
 	}
@@ -43,7 +43,7 @@ func FilterOddPrime(inp []int) []int {
 func FilterEvenMultipleOfFive(inp []int) []int {
 	res := []int{}
 	for _, num := range inp {
-		if isEven(num) && isMultipleOfFive(num) {
+		if isEvenMultipleOfFive(num) {
 			res = append(res, num)
 		}
 	}
@@ -76,6 +76,18 @@ func isPrime(num int) bool {
 func isMultipleOfFive(num int) bool {
 	return num%5 == 0
 }
+
+/**** Composite Helpers ****/
+
+func isOddPrime(num int) bool {
+	return isOdd(num) && isPrime(num)
+}
+
+func isEvenMultipleOfFive(num int) bool {
+	return isEven(num) && isMultipleOfFive(num)
+}
+
+/**** Misc Helpers ****/
 
 func CompareSlicesInt(slice1 []int, slice2 []int) bool {
 	if len(slice1) != len(slice2) {
