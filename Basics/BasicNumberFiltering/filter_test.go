@@ -2,6 +2,8 @@ package main
 
 import "testing"
 
+/* Note: Can add more tests as table-driven tests */
+
 func TestFilterEven(t *testing.T) {
 	sample := []int{1, 2, 3, 4}
 	got := FilterEven(sample)
