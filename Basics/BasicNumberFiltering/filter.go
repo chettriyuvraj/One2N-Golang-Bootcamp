@@ -1,5 +1,9 @@
 package main
 
+type Number interface {
+	int | float64
+}
+
 /**** Filters ****/
 
 func FilterEven(inp []int) []int {
@@ -75,7 +79,7 @@ func isGreaterThanTen(num int) bool {
 
 /**** Misc Helpers ****/
 
-func CompareSlicesInt(slice1 []int, slice2 []int) bool {
+func CompareSlices[V Number](slice1 []V, slice2 []V) bool {
 	if len(slice1) != len(slice2) {
 		return false
 	}
@@ -88,8 +92,8 @@ func CompareSlicesInt(slice1 []int, slice2 []int) bool {
 	return true
 }
 
-func FilterByFuncsMatchAll(inp []int, fList ...func(n int) bool) []int {
-	res := []int{}
+func FilterByFuncsMatchAll[V Number](inp []V, fList ...func(num V) bool) []V {
+	res := []V{}
 	for _, num := range inp {
 		satisfiesAllFuncs := true
 		for _, f := range fList {
@@ -105,8 +109,8 @@ func FilterByFuncsMatchAll(inp []int, fList ...func(n int) bool) []int {
 	return res
 }
 
-func FilterByFuncsMatchAny(inp []int, fList ...func(n int) bool) []int {
-	res := []int{}
+func FilterByFuncsMatchAny[V Number](inp []V, fList ...func(num V) bool) []V {
+	res := []V{}
 	for _, num := range inp {
 		for _, f := range fList {
 			if f(num) {
