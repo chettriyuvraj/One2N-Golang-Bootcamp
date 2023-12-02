@@ -4,33 +4,11 @@ import "testing"
 
 func TestStrategy(t *testing.T) {
 
-	/* Define two custom strategies */
-	holdAtTenStrategy := func(turnValues []int, turnTotal int, total int) bool {
-		if turnTotal >= 10 {
-			return true
-		}
-		return false
-	}
-
-	holdAfterTwoFivesStrategy := func(turnValues []int, turnTotal int, total int) bool {
-		fiveCount := 0
-		for _, turnValue := range turnValues {
-			if turnValue == 5 {
-				fiveCount++
-			}
-			if fiveCount == 2 {
-				return true
-			}
-		}
-		return false
-	}
-
-	/* Test drive */
 	tc := []struct {
 		turnValues   []int /* List of dice values encountered in a given turn */
 		turnTotals   []int /* Cumulative sum of turn values encountered so far */
 		totals       []int /* Overall total of all turns */
-		strategyfunc func(turnValues []int, turnTotal int, total int) bool
+		strategyfunc Strategy
 		want         []bool
 	}{
 		{
