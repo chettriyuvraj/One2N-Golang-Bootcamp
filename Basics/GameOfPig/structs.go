@@ -43,10 +43,20 @@ func (c *Conductor) Conduct(rounds int) {
 	p1Wins, p2Wins := 0, 0
 
 	for i := 0; i < rounds; i++ {
-		for c.player1.total < 100 && c.player2.total < 100 {
+		for {
+			if c.player2.total >= 100 {
+				break
+			}
 			c.player1.PlayTurn()
+
+			if c.player1.total >= 100 {
+				break
+			}
 			c.player2.PlayTurn()
 		}
+
+		fmt.Printf("\nTotal1: %d, Total2: %d", c.player1.total, c.player2.total)
+
 		if c.player1.total >= 100 {
 			p1Wins += 1
 		}
