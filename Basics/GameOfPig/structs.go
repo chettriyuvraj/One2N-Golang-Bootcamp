@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 /* Returns true if hold, else false */
 type Strategy struct {
 	strategyfunc func(turnValues []int, turnTotal int, total int) bool
@@ -46,8 +44,7 @@ type Conductor struct {
 	player2 Player
 }
 
-func (c *Conductor) Conduct(rounds int) {
-	p1Wins, p2Wins := 0, 0
+func (c *Conductor) Conduct(rounds int) (p1Wins int) {
 
 	for i := 0; i < rounds; i++ {
 		for {
@@ -65,12 +62,9 @@ func (c *Conductor) Conduct(rounds int) {
 		if c.player1.total >= 100 {
 			p1Wins += 1
 		}
-		if c.player2.total >= 100 {
-			p2Wins += 1
-		}
 
 		c.player1.total, c.player2.total = 0, 0
 	}
 
-	fmt.Printf("\n\n %s: %d/%d (%f percent) V/S %s: (%d/%d) (%f percent)", c.player1.strategy, p1Wins, rounds, float64(p1Wins)/float64(rounds), c.player2.strategy, p2Wins, rounds, float64(p2Wins)/float64(rounds))
+	return p1Wins
 }

@@ -23,12 +23,21 @@ func main() {
 	}
 
 	for _, r1 := range parsedRanges[0] {
+		p1WinsTotal, p2WinsTotal := 0, 0
+		roundsPlayed := 0
 		for _, r2 := range parsedRanges[1] {
-			player1 := Player{strategy: getHoldAtValueStrategy(r1)}
-			player2 := Player{strategy: getHoldAtValueStrategy(r2)}
-			conductor := Conductor{player1: player1, player2: player2}
-			conductor.Conduct(rounds)
+			if r1 != r2 {
+				player1 := Player{strategy: getHoldAtValueStrategy(r1)}
+				player2 := Player{strategy: getHoldAtValueStrategy(r2)}
+				conductor := Conductor{player1: player1, player2: player2}
+				p1Wins := conductor.Conduct(rounds)
+				p2Wins := rounds - p1Wins
+				p1WinsTotal += p1Wins
+				p2WinsTotal += p2Wins
+				roundsPlayed += rounds
+			}
 		}
+		fmt.Printf("\n\n Result: Wins, Losses staying at k = %d: %d/%d (%f%%), (%d/%d) (%f%%)", r1, p1WinsTotal, roundsPlayed, float64(p1WinsTotal)/float64(roundsPlayed), p2WinsTotal, roundsPlayed, float64(p2WinsTotal)/float64(roundsPlayed))
 	}
 
 }
