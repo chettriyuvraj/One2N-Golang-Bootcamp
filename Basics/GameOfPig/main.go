@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"strconv"
@@ -16,21 +17,25 @@ func main() {
 		return
 	}
 
-	// holdCounts, err := ParseHoldCounts(os.Args[1:])
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(holdCounts)
-	// return
+	parsedRanges, err := ParseRanges(os.Args[1:])
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// player1 := Player{strategy: getHoldAtValueStrategy(holdcount1)}
-	// player2 := Player{strategy: getHoldAtValueStrategy(holdcount2)}
-	// conductor := Conductor{player1: player1, player2: player2}
-	// conductor.Conduct(rounds)
+	for _, r1 := range parsedRanges[0] {
+		for _, r2 := range parsedRanges[1] {
+			player1 := Player{strategy: getHoldAtValueStrategy(r1)}
+			player2 := Player{strategy: getHoldAtValueStrategy(r2)}
+			conductor := Conductor{player1: player1, player2: player2}
+			// fmt.Printf("Holding at %d vs Holding at %d: ", r1, r2)
+			conductor.Conduct(rounds)
+		}
+	}
+
 }
 
 /* Input Ranges: ["1-10", ["3"]];; Parsed Ranges: [[1,10], [3]] */
-func ParseHoldCounts(inputRanges []string) ([][]int, error) {
+func ParseRanges(inputRanges []string) ([][]int, error) {
 	parsedRanges := [][]int{}
 
 	for _, ir := range inputRanges {
@@ -41,16 +46,26 @@ func ParseHoldCounts(inputRanges []string) ([][]int, error) {
 			return [][]int{}, fmt.Errorf("invalid range")
 		}
 
-		for i, r := range inputRange {
-			val, err := strconv.Atoi(r)
+		rangeStart, err := strconv.Atoi(inputRange[0])
+		if err != nil {
+			return [][]int{}, err
+		}
+
+		rangeEnd := rangeStart
+		if len(inputRange) > 1 {
+			rangeEnd, err = strconv.Atoi(inputRange[1])
 			if err != nil {
 				return [][]int{}, err
 			}
+		}
 
-			parsedRange = append(parsedRange, val)
-			if i > 0 && parsedRange[i-1] >= parsedRange[i] {
-				return [][]int{}, fmt.Errorf("range not in increasing order")
-			}
+		rangeEnd += 1
+		if rangeEnd <= rangeStart {
+			return [][]int{}, fmt.Errorf("invalid range")
+		}
+
+		for i := rangeStart; i < rangeEnd; i++ {
+			parsedRange = append(parsedRange, i)
 		}
 
 		parsedRanges = append(parsedRanges, parsedRange)

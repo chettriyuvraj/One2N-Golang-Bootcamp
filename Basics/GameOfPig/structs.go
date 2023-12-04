@@ -55,7 +55,7 @@ func (c *Conductor) Conduct(rounds int) {
 			c.player2.PlayTurn()
 		}
 
-		fmt.Printf("\nTotal1: %d, Total2: %d", c.player1.total, c.player2.total)
+		// fmt.Printf("\nTotal1: %d, Total2: %d", c.player1.total, c.player2.total)
 
 		if c.player1.total >= 100 {
 			p1Wins += 1
@@ -67,5 +67,5 @@ func (c *Conductor) Conduct(rounds int) {
 		c.player1.total, c.player2.total = 0, 0
 	}
 
-	fmt.Printf("Player 1: wins: %d/%d (%f percent);; Player 2: wins: (%d/%d) (%f percent)", p1Wins, rounds, float64(p1Wins)/float64(rounds), p2Wins, rounds, float64(p2Wins)/float64(rounds))
+	fmt.Printf("\n\nPlayer 1: wins: %d/%d (%f percent);; Player 2: wins: (%d/%d) (%f percent)", p1Wins, rounds, float64(p1Wins)/float64(rounds), p2Wins, rounds, float64(p2Wins)/float64(rounds))
 }
