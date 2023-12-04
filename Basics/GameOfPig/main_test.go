@@ -5,11 +5,11 @@ import "testing"
 func TestStrategy(t *testing.T) {
 
 	tc := []struct {
-		turnValues   []int /* List of dice values encountered in a given turn */
-		turnTotals   []int /* Cumulative sum of turn values encountered so far */
-		totals       []int /* Overall total of all turns */
-		strategyfunc Strategy
-		want         []bool
+		turnValues []int /* List of dice values encountered in a given turn */
+		turnTotals []int /* Cumulative sum of turn values encountered so far */
+		totals     []int /* Overall total of all turns */
+		strategy   Strategy
+		want       []bool
 	}{
 		{
 			[]int{1, 5, 3, 6},
@@ -31,7 +31,7 @@ func TestStrategy(t *testing.T) {
 	for _, test := range tc {
 		for i, _ := range test.turnValues {
 			curTurnValues := test.turnValues[:i+1]
-			got := test.strategyfunc(curTurnValues, test.turnTotals[i], test.totals[i])
+			got := test.strategy.strategyfunc(curTurnValues, test.turnTotals[i], test.totals[i])
 			want := test.want[i]
 			if got != want {
 				t.Errorf("strategy func error: got %v, want %v", got, want)

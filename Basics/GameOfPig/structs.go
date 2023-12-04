@@ -3,7 +3,10 @@ package main
 import "fmt"
 
 /* Returns true if hold, else false */
-type Strategy func(turnValues []int, turnTotal int, total int) bool
+type Strategy struct {
+	strategyfunc func(turnValues []int, turnTotal int, total int) bool
+	desc         string
+}
 
 type Player struct {
 	strategy   Strategy
@@ -17,7 +20,7 @@ func (p *Player) PlayTurn() {
 	initialTotal := p.total
 
 	/* Roll die until strategy returns 'true' i.e hold */
-	for !p.strategy(p.turnValues, p.turnTotal, p.total) {
+	for !p.strategy.strategyfunc(p.turnValues, p.turnTotal, p.total) {
 		rolledDie := RollDie()
 
 		if rolledDie == 1 {
