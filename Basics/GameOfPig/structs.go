@@ -1,6 +1,11 @@
 package main
 
-/* Returns true if hold, else false */
+/*
+Returns true if hold, else false
+- turnVales: The sequence of die values rolled in this turn
+- turnTotal: Cumulative value of dies rolled in this turn
+- total: Total score of the players so far
+*/
 type Strategy struct {
 	strategyfunc func(turnValues []int, turnTotal int, total int) bool
 	desc         string
