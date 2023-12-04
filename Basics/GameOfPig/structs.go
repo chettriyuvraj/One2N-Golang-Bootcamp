@@ -8,6 +8,10 @@ type Strategy struct {
 	desc         string
 }
 
+func (s Strategy) String() string {
+	return s.desc
+}
+
 type Player struct {
 	strategy   Strategy
 	turnValues []int
@@ -58,8 +62,6 @@ func (c *Conductor) Conduct(rounds int) {
 			c.player2.PlayTurn()
 		}
 
-		// fmt.Printf("\nTotal1: %d, Total2: %d", c.player1.total, c.player2.total)
-
 		if c.player1.total >= 100 {
 			p1Wins += 1
 		}
@@ -70,5 +72,5 @@ func (c *Conductor) Conduct(rounds int) {
 		c.player1.total, c.player2.total = 0, 0
 	}
 
-	fmt.Printf("\n\nPlayer 1: wins: %d/%d (%f percent);; Player 2: wins: (%d/%d) (%f percent)", p1Wins, rounds, float64(p1Wins)/float64(rounds), p2Wins, rounds, float64(p2Wins)/float64(rounds))
+	fmt.Printf("\n\n %s: %d/%d (%f percent) V/S %s: (%d/%d) (%f percent)", c.player1.strategy, p1Wins, rounds, float64(p1Wins)/float64(rounds), c.player2.strategy, p2Wins, rounds, float64(p2Wins)/float64(rounds))
 }

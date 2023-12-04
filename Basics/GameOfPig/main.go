@@ -27,7 +27,6 @@ func main() {
 			player1 := Player{strategy: getHoldAtValueStrategy(r1)}
 			player2 := Player{strategy: getHoldAtValueStrategy(r2)}
 			conductor := Conductor{player1: player1, player2: player2}
-			// fmt.Printf("Holding at %d vs Holding at %d: ", r1, r2)
 			conductor.Conduct(rounds)
 		}
 	}
