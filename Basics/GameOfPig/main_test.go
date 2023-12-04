@@ -40,3 +40,23 @@ func TestStrategy(t *testing.T) {
 	}
 
 }
+
+func TestParseRange(t *testing.T) {
+	tests := []struct {
+		tc   []string
+		want [][]int
+	}{
+		{[]string{"10", "15"}, [][]int{{10}, {15}}},
+		{[]string{"10-100", "15"}, [][]int{{10, 100}, {15}}},
+		{[]string{"1-2", "3-15"}, [][]int{{1, 2}, {3, 15}}},
+		{[]string{"3-2", "3"}, [][]int{}},
+		{[]string{"2-2", "3"}, [][]int{}},
+	}
+
+	for _, test := range tests {
+		got, _ := ParseHoldCounts(test.tc)
+		if !CompareIntSlices(got, test.want) {
+			t.Errorf("Error parsing holdcount from stdin, got %v want %v", got, test.want)
+		}
+	}
+}
