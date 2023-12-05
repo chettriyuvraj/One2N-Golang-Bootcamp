@@ -1,7 +1,11 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"os"
+	"strings"
 	"syscall"
 
 	"github.com/spf13/cobra"
@@ -21,11 +25,36 @@ func NewRootCmd() *cobra.Command {
 			filename := args[0]
 			flags := syscall.O_RDONLY
 			mode := uint32(0666) /* Does not matter  */
-			_, err := syscall.Open(filename, flags, mode)
+			fd, err := syscall.Open(filename, flags, mode)
 			if err != nil {
 				fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: open: %s", cmd.Name(), filename, err.Error())
 				return
 			}
+
+			f := os.NewFile(uintptr(fd), filename)
+			r := bufio.NewReader(f)
+			lineCount, wordCount, charCount := 0, 0, 0
+			for {
+				s, err := r.ReadString('\n')
+				if err != nil {
+					if err != io.EOF {
+						fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: read: %s", cmd.Name(), filename, GetBaseError(err.Error()))
+						return
+					}
+					break
+				}
+
+				charCount += len(s)
+				lineCount += 1
+				wordCount += len(strings.Fields(s))
+			}
+
+			if l {
+				fmt.Fprintf(cmd.OutOrStdout(), "%8d", lineCount)
+			}
+
+			fmt.Fprintf(cmd.OutOrStdout(), " %s", filename)
+
 		},
 	}
 }
@@ -36,6 +65,13 @@ func init() {
 
 func Execute() {
 	rootCmd.Execute()
+}
+
+/***** Helpers *****/
+
+func GetBaseError(s string) string {
+	errStrs := strings.Split(s, ":")
+	return strings.TrimSpace(errStrs[len(errStrs)-1])
 }
 
 /* Code snippets that may be useful */

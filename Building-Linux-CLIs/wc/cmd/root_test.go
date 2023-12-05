@@ -16,11 +16,16 @@ func TestLFlag(t *testing.T) {
 			args: []string{"-l", "testfile"},
 			want: "wc: testfile: open: no such file or directory",
 		},
-		// {
-		// 	name: "Error when file is a directory",
-		// 	args: []string{"test"},
-		// 	want: "error",
-		// },
+		{
+			name: "Error when file is a directory",
+			args: []string{"-l", "testdata"},
+			want: "wc: testdata: read: is a directory",
+		},
+		{
+			name: "Successful count of lines in file",
+			args: []string{"-l", "testdata/test.txt"},
+			want: "       3 testdata/test.txt",
+		},
 	}
 
 	cmd := rootCmd
