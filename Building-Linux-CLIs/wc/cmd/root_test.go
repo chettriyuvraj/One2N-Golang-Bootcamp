@@ -35,11 +35,11 @@ func TestLFlag(t *testing.T) {
 			err: "",
 		},
 		{
-			name: "Happy case",
-			args: []string{"testdata/test.txt"},
+			name: "Edge case with emoji",
+			args: []string{"testdata/testemoji.txt"},
 			want: map[string]string{
-				"-l": "       3 testdata/test.txt",
-				"-w": "       6 testdata/test.txt",
+				"-l": "       0 testdata/testemoji.txt",
+				"-w": "       2 testdata/testemoji.txt",
 			},
 			err: "",
 		},
@@ -49,6 +49,15 @@ func TestLFlag(t *testing.T) {
 			want: map[string]string{
 				"-l": "       3",
 				"-w": "       6",
+			},
+			err: "",
+		},
+		{
+			name: "Happy case",
+			args: []string{"testdata/test.txt"},
+			want: map[string]string{
+				"-l": "       3 testdata/test.txt",
+				"-w": "       6 testdata/test.txt",
 			},
 			err: "",
 		},
