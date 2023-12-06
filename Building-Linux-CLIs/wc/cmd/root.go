@@ -20,64 +20,43 @@ func NewRootCmd() *cobra.Command {
 		Short: "count lines, words and bytes from input",
 		Long:  `wc is a command-line utility for counting lines words and bytes from the input.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			f, fname := os.Stdin, ""
-			if len(args) > 0 {
-				fname = args[0]
-				file, err := os.Open(fname)
-				if err != nil {
-					fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: open: %s", cmd.Name(), fname, GetBaseError(err.Error()))
-					return
-				}
-
-				f = file
-			}
-
-			r := bufio.NewReader(f)
-			lineCount, wordCount, charCount := 0, 0, 0
-			for {
-				s, err := r.ReadString('\n')
-				if err != nil {
-					if err != io.EOF {
-						fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: read: %s", cmd.Name(), fname, GetBaseError(err.Error()))
-						return
-					}
-					charCount += len(s)
-					wordCount += len(strings.Fields(s))
-					break
-				}
-
-				charCount += len(s)
-				lineCount += 1
-				wordCount += len(strings.Fields(s))
-			}
 
 			noFlagSet := !l && !w && !c
 			if noFlagSet {
 				SetAllFlags()
 			}
 
-			if l {
-				fmt.Fprintf(cmd.OutOrStdout(), "%8d", lineCount)
-				// if w {
-				// 	fmt.Printf(" ")
-				// }
+			if len(args) < 1 {
+				wc(cmd, "")
+				return
 			}
 
-			if w {
-				fmt.Fprintf(cmd.OutOrStdout(), "%8d", wordCount)
-				// if c {
-				// 	fmt.Printf(" ")
-				// }
+			totallc, totalwc, totalcc := 0, 0, 0
+			for i, fname := range args {
+				if i > 0 {
+					fmt.Fprintln(cmd.OutOrStdout())
+				}
+				curlc, curwc, curcc := wc(cmd, fname)
+				totallc += curlc
+				totalwc += curwc
+				totalcc += curcc
 			}
 
-			if c {
-				fmt.Fprintf(cmd.OutOrStdout(), "%8d", charCount)
-			}
+			if len(args) > 1 {
+				fmt.Fprintln(cmd.OutOrStdout())
+				if l {
+					fmt.Fprintf(cmd.OutOrStdout(), "%8d", totallc)
+				}
 
-			if fname != "" {
-				fmt.Fprintf(cmd.OutOrStdout(), " %s", fname)
-			}
+				if w {
+					fmt.Fprintf(cmd.OutOrStdout(), "%8d", totalwc)
+				}
 
+				if c {
+					fmt.Fprintf(cmd.OutOrStdout(), "%8d", totalcc)
+				}
+				fmt.Fprintf(cmd.OutOrStdout(), " total\n")
+			}
 		},
 	}
 }
@@ -88,6 +67,63 @@ func init() {
 
 func Execute() {
 	rootCmd.Execute()
+}
+
+func wc(cmd *cobra.Command, fname string) (lineCount, wordCount, charCount int) {
+	f := os.Stdin
+
+	if fname != "" {
+		filename, err := os.Open(fname)
+		if err != nil {
+			fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: open: %s", cmd.Name(), fname, GetBaseError(err.Error()))
+			return
+		}
+
+		f = filename
+	}
+
+	r := bufio.NewReader(f)
+	lineCount, wordCount, charCount = 0, 0, 0
+	for {
+		s, err := r.ReadString('\n')
+		if err != nil {
+			if err != io.EOF {
+				fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: read: %s", cmd.Name(), fname, GetBaseError(err.Error()))
+				return lineCount, wordCount, charCount
+			}
+			charCount += len(s)
+			wordCount += len(strings.Fields(s))
+			break
+		}
+
+		charCount += len(s)
+		lineCount += 1
+		wordCount += len(strings.Fields(s))
+	}
+
+	if l {
+		fmt.Fprintf(cmd.OutOrStdout(), "%8d", lineCount)
+		// if w {
+		// 	fmt.Printf(" ")
+		// }
+	}
+
+	if w {
+		fmt.Fprintf(cmd.OutOrStdout(), "%8d", wordCount)
+		// if c {
+		// 	fmt.Printf(" ")
+		// }
+	}
+
+	if c {
+		fmt.Fprintf(cmd.OutOrStdout(), "%8d", charCount)
+	}
+
+	if fname != "" {
+		fmt.Fprintf(cmd.OutOrStdout(), " %s", fname)
+	}
+
+	return lineCount, wordCount, charCount
 }
 
 /***** Helpers *****/

@@ -81,13 +81,24 @@ func TestLFlag(t *testing.T) {
 			err: "",
 		},
 		{
-			name: "Happy case",
+			name: "Happy case with single file",
 			args: []string{"testdata/test.txt"},
 			want: map[string]string{
 				"-l":   "       3 testdata/test.txt",
 				"-w":   "       6 testdata/test.txt",
 				"-c":   "      24 testdata/test.txt",
 				"-lwc": "       3       6      24 testdata/test.txt",
+			},
+			err: "",
+		},
+		{
+			name: "Happy case with multiple files",
+			args: []string{"testdata/test.txt", "testdata/test.txt"},
+			want: map[string]string{
+				"-l":   "       3 testdata/test.txt\n       3 testdata/test.txt\n       6 total\n",
+				"-w":   "       6 testdata/test.txt\n       6 testdata/test.txt\n      12 total\n",
+				"-c":   "      24 testdata/test.txt\n      24 testdata/test.txt\n      48 total\n",
+				"-lwc": "       3       6      24 testdata/test.txt\n       3       6      24 testdata/test.txt\n       6      12      48 total\n",
 			},
 			err: "",
 		},
@@ -135,3 +146,6 @@ func TestLFlag(t *testing.T) {
 
 	}
 }
+
+// "       3 testdata/test.txt\n       3 testdata/test.txt\n       6 total\n"
+// "       3 testdata/test.txt\n       3 testdata/test.txt\n       6 total"
