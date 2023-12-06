@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"os"
 	"strings"
 	"testing"
 )
@@ -26,11 +27,22 @@ func TestLFlag(t *testing.T) {
 			args: []string{"-l", "testdata/test.txt"},
 			want: "       3 testdata/test.txt",
 		},
+		{
+			name: "Successful count of lines in stdin",
+			args: []string{"-l"},
+			want: "       3",
+		},
 	}
 
 	cmd := rootCmd
 	for _, test := range tc {
 		var b strings.Builder
+
+		/* Special case: mocking stdin as a file if no args provided */
+		if len(test.args) < 2 {
+			f, _ := os.Open("testdata/test.txt")
+			os.Stdin = f
+		}
 
 		cmd.SetArgs(test.args)
 		cmd.SetOut(&b)

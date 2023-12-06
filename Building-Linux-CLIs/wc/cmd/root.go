@@ -19,13 +19,17 @@ func NewRootCmd() *cobra.Command {
 		Use:   "wc",
 		Short: "count lines, words and bytes from input",
 		Long:  `wc is a command-line utility for counting lines words and bytes from the input.`,
-		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			filename := args[0]
-			f, err := os.Open(filename)
-			if err != nil {
-				fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: open: %s", cmd.Name(), filename, GetBaseError(err.Error()))
-				return
+			f, fname := os.Stdin, ""
+			if len(args) > 0 {
+				fname = args[0]
+				file, err := os.Open(fname)
+				if err != nil {
+					fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: open: %s", cmd.Name(), fname, GetBaseError(err.Error()))
+					return
+				}
+
+				f = file
 			}
 
 			r := bufio.NewReader(f)
@@ -34,7 +38,7 @@ func NewRootCmd() *cobra.Command {
 				s, err := r.ReadString('\n')
 				if err != nil {
 					if err != io.EOF {
-						fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: read: %s", cmd.Name(), filename, GetBaseError(err.Error()))
+						fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: read: %s", cmd.Name(), fname, GetBaseError(err.Error()))
 						return
 					}
 					break
@@ -49,7 +53,9 @@ func NewRootCmd() *cobra.Command {
 				fmt.Fprintf(cmd.OutOrStdout(), "%8d", lineCount)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), " %s", filename)
+			if fname != "" {
+				fmt.Fprintf(cmd.OutOrStdout(), " %s", fname)
+			}
 
 		},
 	}
@@ -73,8 +79,8 @@ func GetBaseError(s string) string {
 /* Code snippets that may be useful */
 
 // RunE: func(cmd *cobra.Command, args []string) error {
-// 	filename := args[0]
-// 	_, err := os.Open(filename)
+// 	fname := args[0]
+// 	_, err := os.Open(fname)
 // 	if err != nil {
 // 		fmt.Fprintf(cmd.OutOrStdout(), "%v", err)
 // 		return err
