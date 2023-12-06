@@ -73,13 +73,14 @@ func wc(cmd *cobra.Command, fname string) (lineCount, wordCount, charCount int) 
 	f := os.Stdin
 
 	if fname != "" {
-		filename, err := os.Open(fname)
+		file, err := os.Open(fname)
 		if err != nil {
 			fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: open: %s", cmd.Name(), fname, GetBaseError(err.Error()))
 			return
 		}
+		defer file.Close()
 
-		f = filename
+		f = file
 	}
 
 	r := bufio.NewReader(f)
