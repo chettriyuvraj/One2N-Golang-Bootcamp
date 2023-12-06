@@ -31,6 +31,7 @@ func TestLFlag(t *testing.T) {
 			want: map[string]string{
 				"-l": "       0 testdata/testnonewline.txt",
 				"-w": "       1 testdata/testnonewline.txt",
+				"-c": "       2 testdata/testnonewline.txt",
 			},
 			err: "",
 		},
@@ -40,6 +41,27 @@ func TestLFlag(t *testing.T) {
 			want: map[string]string{
 				"-l": "       0 testdata/testemoji.txt",
 				"-w": "       2 testdata/testemoji.txt",
+				"-c": "       7 testdata/testemoji.txt",
+			},
+			err: "",
+		},
+		{
+			name: "Edge case with only newlines",
+			args: []string{"testdata/testonlynewline.txt"},
+			want: map[string]string{
+				"-l": "       3 testdata/testonlynewline.txt",
+				"-w": "       0 testdata/testonlynewline.txt",
+				"-c": "       3 testdata/testonlynewline.txt",
+			},
+			err: "",
+		},
+		{
+			name: "Edge case with only spaces",
+			args: []string{"testdata/testonlyspace.txt"},
+			want: map[string]string{
+				"-l": "       0 testdata/testonlyspace.txt",
+				"-w": "       0 testdata/testonlyspace.txt",
+				"-c": "      14 testdata/testonlyspace.txt",
 			},
 			err: "",
 		},
@@ -49,6 +71,7 @@ func TestLFlag(t *testing.T) {
 			want: map[string]string{
 				"-l": "       3",
 				"-w": "       6",
+				"-c": "      24 testdata/test.txt",
 			},
 			err: "",
 		},
@@ -58,6 +81,7 @@ func TestLFlag(t *testing.T) {
 			want: map[string]string{
 				"-l": "       3 testdata/test.txt",
 				"-w": "       6 testdata/test.txt",
+				"-c": "      24 testdata/test.txt",
 			},
 			err: "",
 		},
