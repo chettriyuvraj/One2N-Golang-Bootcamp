@@ -41,6 +41,8 @@ func NewRootCmd() *cobra.Command {
 						fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: read: %s", cmd.Name(), fname, GetBaseError(err.Error()))
 						return
 					}
+					charCount += len(s)
+					wordCount += len(strings.Fields(s))
 					break
 				}
 
