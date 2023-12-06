@@ -29,8 +29,8 @@ func TestLFlag(t *testing.T) {
 			name: "Edge case with no newlines",
 			args: []string{"testdata/testnonewline.txt"},
 			want: map[string]string{
-				"-l": "       0 testnonewline.txt",
-				"-w": "       1 testnonewline.txt",
+				"-l": "       0 testdata/testnonewline.txt",
+				"-w": "       1 testdata/testnonewline.txt",
 			},
 			err: "",
 		},
@@ -55,31 +55,28 @@ func TestLFlag(t *testing.T) {
 	}
 
 	flags := []string{"-l", "-w"} //, "-m", "-lwm", "-mwl"}
-	// cmd := rootCmd
 
 	for _, test := range tc {
 		initargs := test.args
 
-		/* Special case: mocking stdin as a file if no args provided */
-		isStdinMocked := false
-		stdininit := os.Stdin
-		if len(test.args) < 2 {
-			isStdinMocked = true
-			f, _ := os.Open("testdata/test.txt")
-			os.Stdin = f
-		}
-
 		for _, flag := range flags {
 			test.args = append([]string{flag}, initargs...)
 			var b strings.Builder = strings.Builder{}
+
+			/* Special case: mocking stdin as a file if no args provided */
+			isStdinMocked := false
+			stdininit := os.Stdin
+			if len(test.args) < 2 {
+				isStdinMocked = true
+				f, _ := os.Open("testdata/test.txt")
+				os.Stdin = f
+			}
 
 			cmd := NewRootCmd()
 			SetFlags(cmd)
 			cmd.SetArgs(test.args)
 			cmd.SetOut(&b)
 			cmd.Execute()
-			//
-			// cmd.DebugFlags()
 
 			got := b.String()
 			if test.err != "" {
@@ -91,10 +88,10 @@ func TestLFlag(t *testing.T) {
 			if got != test.want[flag] {
 				t.Errorf("\n\nName: %q:\nArgs: %q\nGot: %q\nWanted: %q\n\n", test.name, test.args, got, test.want[flag])
 			}
-		}
 
-		if isStdinMocked {
-			os.Stdin = stdininit
+			if isStdinMocked {
+				os.Stdin = stdininit
+			}
 		}
 
 	}
