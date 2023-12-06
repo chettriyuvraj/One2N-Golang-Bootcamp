@@ -26,51 +26,75 @@ func TestLFlag(t *testing.T) {
 			err:  "wc: testdata: read: is a directory",
 		},
 		{
-			name: "Successful count of lines in file",
-			args: []string{"testdata/test.txt"},
-			want: map[string]string{"-l": "       3 testdata/test.txt"},
-			err:  "",
+			name: "Edge case with no newlines",
+			args: []string{"testdata/testnonewline.txt"},
+			want: map[string]string{
+				"-l": "       0 testnonewline.txt",
+				"-w": "       1 testnonewline.txt",
+			},
+			err: "",
 		},
 		{
-			name: "Successful count of lines in stdin",
+			name: "Happy case",
+			args: []string{"testdata/test.txt"},
+			want: map[string]string{
+				"-l": "       3 testdata/test.txt",
+				"-w": "       6 testdata/test.txt",
+			},
+			err: "",
+		},
+		{
+			name: "Edge case using stdin instead of file",
 			args: []string{},
-			want: map[string]string{"-l": "       3"},
-			err:  "",
+			want: map[string]string{
+				"-l": "       3",
+				"-w": "       6",
+			},
+			err: "",
 		},
 	}
 
-	flags := []string{"-l"} //, "-w"} //, "-m", "-lwm", "-mwl"}
-	cmd := rootCmd
+	flags := []string{"-l", "-w"} //, "-m", "-lwm", "-mwl"}
+	// cmd := rootCmd
 
 	for _, test := range tc {
+		initargs := test.args
+
+		/* Special case: mocking stdin as a file if no args provided */
+		isStdinMocked := false
+		stdininit := os.Stdin
+		if len(test.args) < 2 {
+			isStdinMocked = true
+			f, _ := os.Open("testdata/test.txt")
+			os.Stdin = f
+		}
+
 		for _, flag := range flags {
-			test.args = append([]string{flag}, test.args...)
-			var b strings.Builder
+			test.args = append([]string{flag}, initargs...)
+			var b strings.Builder = strings.Builder{}
 
-			/* Special case: mocking stdin as a file if no args provided */
-			if len(test.args) < 2 {
-				stdin := os.Stdin
-				f, _ := os.Open("testdata/test.txt")
-				os.Stdin = f
-				defer func() {
-					os.Stdin = stdin
-				}()
-			}
-
+			cmd := NewRootCmd()
+			SetFlags(cmd)
 			cmd.SetArgs(test.args)
 			cmd.SetOut(&b)
 			cmd.Execute()
+			//
+			// cmd.DebugFlags()
 
 			got := b.String()
 			if test.err != "" {
 				if got != test.err {
-					t.Errorf("error testing: got %q, wanted %q", got, test.want)
+					t.Errorf("\n\nName: %q:\nArgs: %q\nGot: %q\nWanted: %q\n\n", test.name, test.args, got, test.want)
 				}
-				return
+				continue
 			}
 			if got != test.want[flag] {
-				t.Errorf("got %q, wanted %q", got, test.want)
+				t.Errorf("\n\nName: %q:\nArgs: %q\nGot: %q\nWanted: %q\n\n", test.name, test.args, got, test.want[flag])
 			}
+		}
+
+		if isStdinMocked {
+			os.Stdin = stdininit
 		}
 
 	}

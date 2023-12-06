@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var l bool
+var l, w bool
 
 var rootCmd = NewRootCmd()
 
@@ -53,6 +53,10 @@ func NewRootCmd() *cobra.Command {
 				fmt.Fprintf(cmd.OutOrStdout(), "%8d", lineCount)
 			}
 
+			if w {
+				fmt.Fprintf(cmd.OutOrStdout(), "%8d", wordCount)
+			}
+
 			if fname != "" {
 				fmt.Fprintf(cmd.OutOrStdout(), " %s", fname)
 			}
@@ -62,7 +66,7 @@ func NewRootCmd() *cobra.Command {
 }
 
 func init() {
-	rootCmd.Flags().BoolVarP(&l, "", "l", false, "The number of lines in each input file is written to the standard output")
+	SetFlags(rootCmd)
 }
 
 func Execute() {
@@ -74,6 +78,11 @@ func Execute() {
 func GetBaseError(s string) string {
 	errStrs := strings.Split(s, ":")
 	return strings.TrimSpace(errStrs[len(errStrs)-1])
+}
+
+func SetFlags(cmd *cobra.Command) {
+	cmd.Flags().BoolVarP(&l, "line", "l", false, "The number of lines in each input file is written to the standard output")
+	cmd.Flags().BoolVarP(&w, "word", "w", false, "The number of lines in each input file is written to the standard output")
 }
 
 /* Code snippets that may be useful */
