@@ -10,31 +10,31 @@ func TestLFlag(t *testing.T) {
 	tc := []struct {
 		name string
 		args []string
-		want string
+		want map[string]string
 		err  string
 	}{
 		{
 			name: "Error when file does not exist",
 			args: []string{"testfile"},
-			want: "",
+			want: map[string]string{},
 			err:  "wc: testfile: open: no such file or directory",
 		},
 		{
 			name: "Error when file is a directory",
 			args: []string{"testdata"},
-			want: "",
+			want: map[string]string{},
 			err:  "wc: testdata: read: is a directory",
 		},
 		{
 			name: "Successful count of lines in file",
 			args: []string{"testdata/test.txt"},
-			want: "       3 testdata/test.txt",
+			want: map[string]string{"-l": "       3 testdata/test.txt"},
 			err:  "",
 		},
 		{
 			name: "Successful count of lines in stdin",
 			args: []string{},
-			want: "       3",
+			want: map[string]string{"-l": "       3"},
 			err:  "",
 		},
 	}
@@ -68,7 +68,7 @@ func TestLFlag(t *testing.T) {
 				}
 				return
 			}
-			if got != test.want {
+			if got != test.want[flag] {
 				t.Errorf("got %q, wanted %q", got, test.want)
 			}
 		}
