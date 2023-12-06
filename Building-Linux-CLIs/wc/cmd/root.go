@@ -51,12 +51,23 @@ func NewRootCmd() *cobra.Command {
 				wordCount += len(strings.Fields(s))
 			}
 
+			noFlagSet := !l && !w && !c
+			if noFlagSet {
+				SetAllFlags()
+			}
+
 			if l {
 				fmt.Fprintf(cmd.OutOrStdout(), "%8d", lineCount)
+				// if w {
+				// 	fmt.Printf(" ")
+				// }
 			}
 
 			if w {
 				fmt.Fprintf(cmd.OutOrStdout(), "%8d", wordCount)
+				// if c {
+				// 	fmt.Printf(" ")
+				// }
 			}
 
 			if c {
@@ -72,7 +83,7 @@ func NewRootCmd() *cobra.Command {
 }
 
 func init() {
-	SetFlags(rootCmd)
+	AddFlags(rootCmd)
 }
 
 func Execute() {
@@ -86,10 +97,14 @@ func GetBaseError(s string) string {
 	return strings.TrimSpace(errStrs[len(errStrs)-1])
 }
 
-func SetFlags(cmd *cobra.Command) {
+func AddFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVarP(&l, "line", "l", false, "The number of lines in each input file is written to the standard output")
 	cmd.Flags().BoolVarP(&w, "word", "w", false, "The number of lines in each input file is written to the standard output")
 	cmd.Flags().BoolVarP(&c, "char", "c", false, "The number of bytes in each input file is written to the standard output")
+}
+
+func SetAllFlags() {
+	l, w, c = true, true, true
 }
 
 /* Code snippets that may be useful */
