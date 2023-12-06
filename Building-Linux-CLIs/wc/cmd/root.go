@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"strings"
-	"syscall"
 
 	"github.com/spf13/cobra"
 )
@@ -23,15 +22,12 @@ func NewRootCmd() *cobra.Command {
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			filename := args[0]
-			flags := syscall.O_RDONLY
-			mode := uint32(0666) /* Does not matter  */
-			fd, err := syscall.Open(filename, flags, mode)
+			f, err := os.Open(filename)
 			if err != nil {
-				fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: open: %s", cmd.Name(), filename, err.Error())
+				fmt.Fprintf(cmd.OutOrStdout(), "%s: %s: open: %s", cmd.Name(), filename, GetBaseError(err.Error()))
 				return
 			}
 
-			f := os.NewFile(uintptr(fd), filename)
 			r := bufio.NewReader(f)
 			lineCount, wordCount, charCount := 0, 0, 0
 			for {
