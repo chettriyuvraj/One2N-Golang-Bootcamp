@@ -40,8 +40,12 @@ func TestLFlag(t *testing.T) {
 
 		/* Special case: mocking stdin as a file if no args provided */
 		if len(test.args) < 2 {
+			stdin := os.Stdin
 			f, _ := os.Open("testdata/test.txt")
 			os.Stdin = f
+			defer func() {
+				os.Stdin = stdin
+			}()
 		}
 
 		cmd.SetArgs(test.args)
