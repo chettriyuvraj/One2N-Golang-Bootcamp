@@ -12,44 +12,36 @@ func TestTreeBasic(t *testing.T) {
 		want string
 	}{
 		{
-			name: "Happy case current directory",
-			args: []string{"."},
-			want: `.
-├── chars.go
-├── root.go
-├── root_test.go
-└── testdata
-    ├── emptydir
-    └── testdir
-        ├── testdirinner
-        │   └── testdirinner.txt
-        ├── testfile1.txt
-        └── testfile2.txt
+			name: "Happy case: multiple directories + files",
+			args: []string{"testdata"},
+			want: `testdata
+├── emptydir
+├── testdir
+│   ├── testdirinner
+│   │   └── testdirinner.txt
+│   ├── testfile1.txt
+│   └── testfile2.txt
+└── testdironlyfiles
+    └── 1.txt
 
-5 directories, 6 files
+5 directories, 4 files
 `,
 		},
 		{
-			name: "Happy case parent directory",
-			args: []string{"../"},
-			want: `../
-├── cmd
-│   ├── chars.go
-│   ├── root.go
-│   ├── root_test.go
-│   └── testdata
-│       ├── emptydir
-│       └── testdir
-│           ├── testdirinner
-│           │   └── testdirinner.txt
-│           ├── testfile1.txt
-│           └── testfile2.txt
-├── go.mod
-├── go.sum
-├── main.go
-└── notes.txt
+			name: "Happy case: only files",
+			args: []string{"./testdata/testdironlyfiles"},
+			want: `./testdata/testdironlyfiles
+└── 1.txt
 
-6 directories, 10 files
+1 directory, 1 file
+`,
+		},
+		{
+			name: "Edge case: empty directory",
+			args: []string{"testdata/emptydir/"},
+			want: `testdata/emptydir/
+
+0 directories, 0 files
 `,
 		},
 	}
