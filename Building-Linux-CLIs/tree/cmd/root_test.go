@@ -13,18 +13,14 @@ func TestTreeBasic(t *testing.T) {
 	}{
 		{
 			name: "Happy case: multiple directories + files",
-			args: []string{"testdata"},
-			want: `testdata
-├── emptydir
-├── testdir
-│   ├── testdirinner
-│   │   └── testdirinner.txt
-│   ├── testfile1.txt
-│   └── testfile2.txt
-└── testdironlyfiles
-    └── 1.txt
+			args: []string{"testdata/testdir"},
+			want: `testdata/testdir
+├── testdirinner
+│   └── testdirinner.txt
+├── testfile1.txt
+└── testfile2.txt
 
-5 directories, 4 files
+2 directories, 3 files
 `,
 		},
 		{
@@ -40,6 +36,14 @@ func TestTreeBasic(t *testing.T) {
 			name: "Edge case: empty directory",
 			args: []string{"testdata/emptydir/"},
 			want: `testdata/emptydir/
+
+0 directories, 0 files
+`,
+		},
+		{
+			name: "Error: file doesn't exist",
+			args: []string{"testdata/x"},
+			want: `testdata/x  [error opening dir]
 
 0 directories, 0 files
 `,
