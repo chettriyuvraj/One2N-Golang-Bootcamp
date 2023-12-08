@@ -32,13 +32,18 @@ func NewRootCmd() *cobra.Command {
 				dcount += dc
 			}
 
-			dirStr := "directory"
-			if dcount > 1 {
-				dirStr = "directories"
+			/* Edge case - empty directory */
+			if fcount == 0 && dcount == 1 {
+				dcount -= 1
 			}
-			fileStr := "file"
-			if fcount > 1 {
-				fileStr = "files"
+
+			dirStr := "directories"
+			if dcount == 1 {
+				dirStr = "directory"
+			}
+			fileStr := "files"
+			if fcount == 1 {
+				fileStr = "file"
 			}
 			fmt.Fprintf(cmd.OutOrStdout(), "\n\n%d %s, %d %s\n", dcount, dirStr, fcount, fileStr)
 		},
