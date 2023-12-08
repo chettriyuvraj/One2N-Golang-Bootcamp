@@ -7,7 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const defaultbasepath = "."
+const (
+	defaultbasepath = "."
+	defaulterrmsg   = "error opening dir"
+)
 
 var rootCmd = NewRootCmd()
 
@@ -26,7 +29,9 @@ func NewRootCmd() *cobra.Command {
 				fmt.Fprintf(cmd.OutOrStdout(), "%s", path)
 				fc, dc, err := tree(cmd, path, []bool{})
 				if err != nil {
-					fmt.Fprintf(cmd.OutOrStdout(), "%s", err.Error())
+					fmt.Fprintf(cmd.OutOrStdout(), "  [error opening dir]")
+					fcount, dcount = 0, 0
+					break
 				}
 				fcount += fc
 				dcount += dc
