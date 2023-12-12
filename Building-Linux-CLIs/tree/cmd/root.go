@@ -15,7 +15,7 @@ const (
 
 var rootCmd = NewRootCmd()
 
-var f, d bool
+var ff, df bool
 
 func NewRootCmd() *cobra.Command {
 	return &cobra.Command{
@@ -28,14 +28,14 @@ func NewRootCmd() *cobra.Command {
 			}
 
 			ancestors := []DirInfo{}
-			if f {
+			if ff {
 				ancestors = append(ancestors, DirInfo{isDummyEntry: true, DummyName: strings.Join(args, "")})
 			}
 
 			fcount, dcount := 0, 1
 			for _, path := range args {
 
-				if f { /* Edge case - f flag removes trailing '/' */
+				if ff { /* Edge case - f flag removes trailing '/' */
 					n := len(path)
 					if path[n-1] == '/' {
 						path = path[:n-1]
@@ -66,7 +66,11 @@ func NewRootCmd() *cobra.Command {
 			if fcount == 1 {
 				fileStr = "file"
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "\n\n%d %s, %d %s\n", dcount, dirStr, fcount, fileStr)
+			fmt.Fprintf(cmd.OutOrStdout(), "\n\n%d %s", dcount, dirStr)
+			if !df {
+				fmt.Fprintf(cmd.OutOrStdout(), ", %d %s", fcount, fileStr)
+			}
+			fmt.Fprintf(cmd.OutOrStdout(), "\n")
 		},
 	}
 }
@@ -80,8 +84,8 @@ func Execute() {
 }
 
 func setFlags(cmd *cobra.Command) {
-	cmd.Flags().BoolVarP(&f, "fullpath", "f", false, "Print the full path prefix for each file")
-	cmd.Flags().BoolVarP(&d, "fullpath", "f", false, "Print only directories")
+	cmd.Flags().BoolVarP(&ff, "fullpath", "f", false, "Print the full path prefix for each file")
+	cmd.Flags().BoolVarP(&df, "dir", "d", false, "Print only directories")
 }
 
 func tree(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount int, dcount int, err error) {
@@ -90,7 +94,12 @@ func tree(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount int, 
 		return -1, -1, err
 	}
 
+	if df {
+		direntries = filterDirs(direntries)
+	}
+
 	for i, d := range direntries {
+
 		isLastElem := i == len(direntries)-1
 		dinfo := DirInfo{dir: d, isLastElem: isLastElem}
 		printDirEntry(cmd, d, isLastElem, dirAncestors)
@@ -127,13 +136,13 @@ func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncest
 			}
 			fmt.Fprintf(cmd.OutOrStdout(), "   ")
 
-			if f {
+			if ff {
 				dName.WriteString(di.dir.Name() + "/")
 			}
 			continue
 		}
 
-		if f {
+		if ff {
 			dName.WriteString(di.DummyName)
 			if di.DummyName[len(di.DummyName)-1] != '/' {
 				dName.WriteString("/")
@@ -157,4 +166,14 @@ func (d DirInfo) String() string {
 		return fmt.Sprintf("%s ", d.dir.Name())
 	}
 	return fmt.Sprintf("%s ", d.DummyName)
+}
+
+func filterDirs(de []os.DirEntry) []os.DirEntry {
+	dirs := []os.DirEntry{}
+	for _, elem := range de {
+		if elem.IsDir() {
+			dirs = append(dirs, elem)
+		}
+	}
+	return dirs
 }
