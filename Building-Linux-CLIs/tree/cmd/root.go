@@ -34,6 +34,14 @@ func NewRootCmd() *cobra.Command {
 
 			fcount, dcount := 0, 1
 			for _, path := range args {
+
+				if f { /* Edge case - f flag removes trailing '/' */
+					n := len(path)
+					if path[n-1] == '/' {
+						path = path[:n-1]
+					}
+				}
+
 				fmt.Fprintf(cmd.OutOrStdout(), "%s", path)
 				fc, dc, err := tree(cmd, path, ancestors)
 				if err != nil {
