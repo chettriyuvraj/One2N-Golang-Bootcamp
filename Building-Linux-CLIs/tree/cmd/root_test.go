@@ -83,6 +83,31 @@ func TestTreeRelativePath(t *testing.T) {
 2 directories, 3 files
 `,
 		},
+		{
+			name: "Happy case: only files",
+			args: []string{"-f", "./testdata/testdironlyfiles"},
+			want: `./testdata/testdironlyfiles
+└── ./testdata/testdironlyfiles/1.txt
+
+1 directory, 1 file
+`,
+		},
+		{
+			name: "Edge case: empty directory",
+			args: []string{"-f", "testdata/emptydir/"},
+			want: `testdata/emptydir
+
+0 directories, 0 files
+`,
+		},
+		{
+			name: "Error: file doesn't exist",
+			args: []string{"-f", "testdata/x"},
+			want: `testdata/x  [error opening dir]
+
+0 directories, 0 files
+`,
+		},
 	}
 
 	for _, test := range tc {
