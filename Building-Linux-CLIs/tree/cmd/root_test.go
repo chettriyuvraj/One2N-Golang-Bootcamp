@@ -64,3 +64,38 @@ func TestTreeBasic(t *testing.T) {
 		}
 	}
 }
+
+func TestTreeRelativePath(t *testing.T) {
+	tc := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{
+			name: "Happy case: relative path with multiple directories + files",
+			args: []string{"-f", "testdata/testdir"},
+			want: `testdata/testdir
+├── testdata/testdir/testdirinner
+│   └── testdata/testdir/testdirinner/testdirinner.txt
+├── testdata/testdir/testfile1.txt
+└── testdata/testdir/testfile2.txt
+
+2 directories, 3 files
+`,
+		},
+	}
+
+	for _, test := range tc {
+		var b strings.Builder
+		cmd := NewRootCmd()
+		setFlags(cmd)
+		cmd.SetOut(&b)
+		cmd.SetArgs(test.args)
+
+		cmd.Execute()
+		got := b.String()
+		if got != test.want {
+			t.Errorf("\nTest: %s\nArgs: %s\nWant: %s\nGot: %s\n\n", test.name, test.args, test.want, got)
+		}
+	}
+}
