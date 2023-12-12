@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -14,6 +15,8 @@ const (
 
 var rootCmd = NewRootCmd()
 
+var f bool
+
 func NewRootCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "tree",
@@ -24,10 +27,15 @@ func NewRootCmd() *cobra.Command {
 				args = append(args, defaultbasepath)
 			}
 
+			ancestors := []DirInfo{}
+			if f {
+				ancestors = append(ancestors, DirInfo{isDummyEntry: true, DummyName: strings.Join(args, "")})
+			}
+
 			fcount, dcount := 0, 1
 			for _, path := range args {
 				fmt.Fprintf(cmd.OutOrStdout(), "%s", path)
-				fc, dc, err := tree(cmd, path, []bool{})
+				fc, dc, err := tree(cmd, path, ancestors)
 				if err != nil {
 					fmt.Fprintf(cmd.OutOrStdout(), "  [error opening dir]")
 					fcount, dcount = 0, 0
@@ -63,7 +71,11 @@ func Execute() {
 	rootCmd.Execute()
 }
 
-func tree(cmd *cobra.Command, path string, isAncestorLastDir []bool) (fcount int, dcount int, err error) {
+func setFlags(cmd *cobra.Command) {
+	cmd.Flags().BoolVarP(&f, "fullpath", "f", false, "Print the full path prefix for each file")
+}
+
+func tree(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount int, dcount int, err error) {
 	direntries, err := os.ReadDir(path)
 	if err != nil {
 		return -1, -1, err
@@ -71,14 +83,15 @@ func tree(cmd *cobra.Command, path string, isAncestorLastDir []bool) (fcount int
 
 	for i, d := range direntries {
 		isLastElem := i == len(direntries)-1
-		printDirEntry(cmd, d, isLastElem, isAncestorLastDir)
+		dinfo := DirInfo{dir: d, isLastElem: isLastElem}
+		printDirEntry(cmd, d, isLastElem, dirAncestors)
 
 		if !d.IsDir() {
 			fcount += 1
 			continue
 		}
 
-		fc, dc, err := tree(cmd, fmt.Sprintf("%s/%s", path, d.Name()), append(isAncestorLastDir, isLastElem))
+		fc, dc, err := tree(cmd, fmt.Sprintf("%s/%s", path, d.Name()), append(dirAncestors, dinfo))
 		if err != nil {
 			return -1, -1, err
 		}
@@ -91,22 +104,45 @@ func tree(cmd *cobra.Command, path string, isAncestorLastDir []bool) (fcount int
 
 /***** Helpers *****/
 
-func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, isAncestorLastDir []bool) {
+func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncestors []DirInfo) {
 	fmt.Fprintf(cmd.OutOrStdout(), "\n")
 
-	for _, b := range isAncestorLastDir {
-		if b {
-			fmt.Fprintf(cmd.OutOrStdout(), " ")
-		} else {
-			fmt.Fprintf(cmd.OutOrStdout(), "%s", vline)
+	var dName strings.Builder
+
+	for _, di := range dirAncestors {
+		if !di.isDummyEntry {
+			if di.isLastElem {
+				fmt.Fprintf(cmd.OutOrStdout(), " ")
+			} else {
+				fmt.Fprintf(cmd.OutOrStdout(), "%s", vline)
+			}
+			fmt.Fprintf(cmd.OutOrStdout(), "   ")
+
+			if f {
+				dName.WriteString(di.dir.Name() + "/")
+			}
+			continue
 		}
-		fmt.Fprintf(cmd.OutOrStdout(), "   ")
+
+		if f {
+			dName.WriteString(di.DummyName + "/")
+		}
+
 	}
 
+	dName.WriteString(d.Name())
+
 	if isLastElem {
-		fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshafthalf, hline, hline, d.Name())
+		fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshafthalf, hline, hline, dName.String())
 		return
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshaft, hline, hline, d.Name())
+	fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshaft, hline, hline, dName.String())
+}
+
+func (d DirInfo) String() string {
+	if !d.isDummyEntry {
+		return fmt.Sprintf("%s ", d.dir.Name())
+	}
+	return fmt.Sprintf("%s ", d.DummyName)
 }
