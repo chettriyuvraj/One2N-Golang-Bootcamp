@@ -15,7 +15,7 @@ const (
 
 var rootCmd = NewRootCmd()
 
-var f bool
+var f, d bool
 
 func NewRootCmd() *cobra.Command {
 	return &cobra.Command{
@@ -81,6 +81,7 @@ func Execute() {
 
 func setFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVarP(&f, "fullpath", "f", false, "Print the full path prefix for each file")
+	cmd.Flags().BoolVarP(&d, "fullpath", "f", false, "Print only directories")
 }
 
 func tree(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount int, dcount int, err error) {
