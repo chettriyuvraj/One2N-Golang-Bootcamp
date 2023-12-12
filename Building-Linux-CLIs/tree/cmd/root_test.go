@@ -140,31 +140,30 @@ func TestTreeDirFlag(t *testing.T) {
 2 directories
 `,
 		},
-		// 		{
-		// 			name: "Happy case: only files",
-		// 			args: []string{"-d", "./testdata/testdironlyfiles"},
-		// 			want: `./testdata/testdironlyfiles
-		// └── ./testdata/testdironlyfiles/1.txt
+		{
+			name: "Happy case: only files",
+			args: []string{"-d", "./testdata/testdironlyfiles/"},
+			want: `./testdata/testdironlyfiles/
 
-		// 1 directory, 1 file
-		// `,
-		// 		},
-		// 		{
-		// 			name: "Edge case: empty directory",
-		// 			args: []string{"-d", "testdata/emptydir/"},
-		// 			want: `testdata/emptydir
+0 directories
+`,
+		},
+		{
+			name: "Edge case: empty directory",
+			args: []string{"-d", "testdata/emptydir/"},
+			want: `testdata/emptydir/
 
-		// 0 directories, 0 files
-		// `,
-		// 		},
-		// 		{
-		// 			name: "Error: file doesn't exist",
-		// 			args: []string{"-d", "testdata/x"},
-		// 			want: `testdata/x  [error opening dir]
+0 directories
+`},
 
-		// 0 directories, 0 files
-		// `,
-		// 		},
+		{
+			name: "Error: file doesn't exist",
+			args: []string{"-d", "testdata/x"},
+			want: `testdata/x  [error opening dir]
+
+0 directories
+`,
+		},
 	}
 
 	for _, test := range tc {
