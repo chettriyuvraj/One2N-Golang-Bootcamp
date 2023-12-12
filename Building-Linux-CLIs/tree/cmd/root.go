@@ -64,7 +64,7 @@ func NewRootCmd() *cobra.Command {
 }
 
 func init() {
-
+	setFlags(rootCmd)
 }
 
 func Execute() {
@@ -125,7 +125,10 @@ func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncest
 		}
 
 		if f {
-			dName.WriteString(di.DummyName + "/")
+			dName.WriteString(di.DummyName)
+			if di.DummyName[len(di.DummyName)-1] != '/' {
+				dName.WriteString("/")
+			}
 		}
 
 	}
