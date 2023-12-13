@@ -33,6 +33,40 @@ func TestTreeBasic(t *testing.T) {
 `,
 		},
 		{
+			name: "Happy case: multiple args",
+			args: []string{"./", "./testdata/"},
+			want: `./
+├── chars.go
+├── root.go
+├── root_test.go
+├── structs.go
+└── testdata
+    ├── emptydir
+    ├── nopermdir
+    │   └── nopermnesteddir
+    ├── testdir
+    │   ├── testdirinner
+    │   │   └── testdirinner.txt
+    │   ├── testfile1.txt
+    │   └── testfile2.txt
+    └── testdironlyfiles
+        └── 1.txt
+./testdata/
+├── emptydir
+├── nopermdir
+│   └── nopermnesteddir
+├── testdir
+│   ├── testdirinner
+│   │   └── testdirinner.txt
+│   ├── testfile1.txt
+│   └── testfile2.txt
+└── testdironlyfiles
+    └── 1.txt
+
+15 directories, 12 files
+`,
+		},
+		{
 			name: "Edge case: empty directory",
 			args: []string{"testdata/emptydir/"},
 			want: `testdata/emptydir/
@@ -180,3 +214,59 @@ func TestTreeDirFlag(t *testing.T) {
 		}
 	}
 }
+
+// func TestTreeJsonFlag(t *testing.T) {
+// 	tc := []struct {
+// 		name string
+// 		args []string
+// 		want string
+// 	}{
+// 		{
+// 			name: "Happy case: relative path with multiple directories + files",
+// 			args: []string{"-j", "testdata/testdir"},
+// 			want: `testdata/testdir
+// └── testdirinner
+
+// 2 directories
+// `,
+// 		},
+// 		{
+// 			name: "Happy case: only files",
+// 			args: []string{"-d", "./testdata/testdironlyfiles/"},
+// 			want: `./testdata/testdironlyfiles/
+
+// 0 directories
+// `,
+// 		},
+// 		{
+// 			name: "Edge case: empty directory",
+// 			args: []string{"-d", "testdata/emptydir/"},
+// 			want: `testdata/emptydir/
+
+// 0 directories
+// `},
+
+// 		{
+// 			name: "Error: file doesn't exist",
+// 			args: []string{"-d", "testdata/x"},
+// 			want: `testdata/x  [error opening dir]
+
+// 0 directories
+// `,
+// 		},
+// 	}
+
+// 	for _, test := range tc {
+// 		var b strings.Builder
+// 		cmd := NewRootCmd()
+// 		setFlags(cmd)
+// 		// cmd.SetOut(&b)
+// 		cmd.SetArgs(test.args)
+
+// 		cmd.Execute()
+// 		got := b.String()
+// 		if got != test.want {
+// 			t.Errorf("\nTest: %s\nArgs: %s\nWant: %s\nGot: %s\n\n", test.name, test.args, test.want, got)
+// 		}
+// 	}
+// }
