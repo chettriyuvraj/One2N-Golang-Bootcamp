@@ -15,7 +15,7 @@ const (
 
 var rootCmd = NewRootCmd()
 
-var ff, df bool
+var ff, df, jf bool
 
 func NewRootCmd() *cobra.Command {
 	return &cobra.Command{
@@ -43,23 +43,22 @@ func Execute() {
 func setFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVarP(&ff, "fullpath", "f", false, "Print the full path prefix for each file")
 	cmd.Flags().BoolVarP(&df, "dir", "d", false, "Print only directories")
+	cmd.Flags().BoolVarP(&jf, "json", "j", false, "Print tree as JSON")
 }
 
 func tree(cmd *cobra.Command, args []string) {
 
-	/* Append the root path as a dummy ancestor to be printed each time -> -f flag */
-	ancestors := []DirInfo{}
-	if ff {
-		ancestors = append(ancestors, DirInfo{isDummyEntry: true, DummyName: strings.Join(args, "")})
-	}
+	/*** DFS ***/
+	fcount, dcount := 0, 0
+	for i, path := range args {
 
-	/* Initialize dfs for each path in aguments */
-	fcount, dcount := 0, 1
-	for _, path := range args {
+		/** Pre-processing **/
+		ancestors := []DirInfo{}
 
-		/* Edge case - f flag removes trailing '/' */
 		if ff {
+			ancestors = append(ancestors, DirInfo{isDummyEntry: true, DummyName: strings.Join(args, "")})
 			n := len(path)
+			/* Edge case - remove trailing '/' */
 			if path[n-1] == '/' {
 				path = path[:n-1]
 			}
@@ -73,7 +72,11 @@ func tree(cmd *cobra.Command, args []string) {
 			break
 		}
 		fcount += fc
-		dcount += dc
+		dcount += dc + 1
+
+		if i != len(args)-1 {
+			fmt.Fprintf(cmd.OutOrStdout(), "\n")
+		}
 	}
 
 	printfiledircount(cmd, fcount, dcount)
@@ -112,6 +115,8 @@ func treedfs(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount in
 }
 
 /***** Helpers *****/
+
+/**** Print Helpers ****/
 
 func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncestors []DirInfo) {
 	var dName strings.Builder
@@ -172,6 +177,12 @@ func printfiledircount(cmd *cobra.Command, fcount, dcount int) {
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "\n")
 }
+
+func printjson(cmd *cobra.Command, elemType string, name string) {
+
+}
+
+/**** Misc Helpers ****/
 
 func filterDirs(de []os.DirEntry) []os.DirEntry {
 	dirs := []os.DirEntry{}
