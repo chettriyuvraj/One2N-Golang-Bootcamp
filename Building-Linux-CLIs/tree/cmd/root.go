@@ -46,15 +46,19 @@ func setFlags(cmd *cobra.Command) {
 }
 
 func tree(cmd *cobra.Command, args []string) {
+
+	/* Append the root path as a dummy ancestor to be printed each time -> -f flag */
 	ancestors := []DirInfo{}
 	if ff {
 		ancestors = append(ancestors, DirInfo{isDummyEntry: true, DummyName: strings.Join(args, "")})
 	}
 
+	/* Initialize dfs for each path in aguments */
 	fcount, dcount := 0, 1
 	for _, path := range args {
 
-		if ff { /* Edge case - f flag removes trailing '/' */
+		/* Edge case - f flag removes trailing '/' */
+		if ff {
 			n := len(path)
 			if path[n-1] == '/' {
 				path = path[:n-1]
@@ -110,9 +114,9 @@ func treedfs(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount in
 /***** Helpers *****/
 
 func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncestors []DirInfo) {
-	fmt.Fprintf(cmd.OutOrStdout(), "\n")
-
 	var dName strings.Builder
+
+	fmt.Fprintf(cmd.OutOrStdout(), "\n")
 
 	for _, di := range dirAncestors {
 		if !di.isDummyEntry {
