@@ -53,24 +53,7 @@ func NewRootCmd() *cobra.Command {
 				dcount += dc
 			}
 
-			/* Edge case - empty directory */
-			if fcount == 0 && dcount == 1 {
-				dcount -= 1
-			}
-
-			dirStr := "directories"
-			if dcount == 1 {
-				dirStr = "directory"
-			}
-			fileStr := "files"
-			if fcount == 1 {
-				fileStr = "file"
-			}
-			fmt.Fprintf(cmd.OutOrStdout(), "\n\n%d %s", dcount, dirStr)
-			if !df {
-				fmt.Fprintf(cmd.OutOrStdout(), ", %d %s", fcount, fileStr)
-			}
-			fmt.Fprintf(cmd.OutOrStdout(), "\n")
+			printfiledircount(cmd, fcount, dcount)
 		},
 	}
 }
@@ -161,11 +144,25 @@ func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncest
 	fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshaft, hline, hline, dName.String())
 }
 
-func (d DirInfo) String() string {
-	if !d.isDummyEntry {
-		return fmt.Sprintf("%s ", d.dir.Name())
+func printfiledircount(cmd *cobra.Command, fcount, dcount int) {
+	/* Edge case - empty directory */
+	if fcount == 0 && dcount == 1 {
+		dcount -= 1
 	}
-	return fmt.Sprintf("%s ", d.DummyName)
+
+	dirStr := "directories"
+	if dcount == 1 {
+		dirStr = "directory"
+	}
+	fileStr := "files"
+	if fcount == 1 {
+		fileStr = "file"
+	}
+	fmt.Fprintf(cmd.OutOrStdout(), "\n\n%d %s", dcount, dirStr)
+	if !df {
+		fmt.Fprintf(cmd.OutOrStdout(), ", %d %s", fcount, fileStr)
+	}
+	fmt.Fprintf(cmd.OutOrStdout(), "\n")
 }
 
 func filterDirs(de []os.DirEntry) []os.DirEntry {
@@ -176,4 +173,11 @@ func filterDirs(de []os.DirEntry) []os.DirEntry {
 		}
 	}
 	return dirs
+}
+
+func (d DirInfo) String() string {
+	if !d.isDummyEntry {
+		return fmt.Sprintf("%s ", d.dir.Name())
+	}
+	return fmt.Sprintf("%s ", d.DummyName)
 }
