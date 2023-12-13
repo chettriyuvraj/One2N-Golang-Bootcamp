@@ -27,33 +27,7 @@ func NewRootCmd() *cobra.Command {
 				args = append(args, defaultbasepath)
 			}
 
-			ancestors := []DirInfo{}
-			if ff {
-				ancestors = append(ancestors, DirInfo{isDummyEntry: true, DummyName: strings.Join(args, "")})
-			}
-
-			fcount, dcount := 0, 1
-			for _, path := range args {
-
-				if ff { /* Edge case - f flag removes trailing '/' */
-					n := len(path)
-					if path[n-1] == '/' {
-						path = path[:n-1]
-					}
-				}
-
-				fmt.Fprintf(cmd.OutOrStdout(), "%s", path)
-				fc, dc, err := tree(cmd, path, ancestors)
-				if err != nil {
-					fmt.Fprintf(cmd.OutOrStdout(), "  [error opening dir]")
-					fcount, dcount = 0, 0
-					break
-				}
-				fcount += fc
-				dcount += dc
-			}
-
-			printfiledircount(cmd, fcount, dcount)
+			tree(cmd, args)
 		},
 	}
 }
@@ -71,7 +45,37 @@ func setFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVarP(&df, "dir", "d", false, "Print only directories")
 }
 
-func tree(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount int, dcount int, err error) {
+func tree(cmd *cobra.Command, args []string) {
+	ancestors := []DirInfo{}
+	if ff {
+		ancestors = append(ancestors, DirInfo{isDummyEntry: true, DummyName: strings.Join(args, "")})
+	}
+
+	fcount, dcount := 0, 1
+	for _, path := range args {
+
+		if ff { /* Edge case - f flag removes trailing '/' */
+			n := len(path)
+			if path[n-1] == '/' {
+				path = path[:n-1]
+			}
+		}
+
+		fmt.Fprintf(cmd.OutOrStdout(), "%s", path)
+		fc, dc, err := treedfs(cmd, path, ancestors)
+		if err != nil {
+			fmt.Fprintf(cmd.OutOrStdout(), "  [error opening dir]")
+			fcount, dcount = 0, 0
+			break
+		}
+		fcount += fc
+		dcount += dc
+	}
+
+	printfiledircount(cmd, fcount, dcount)
+}
+
+func treedfs(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount int, dcount int, err error) {
 	direntries, err := os.ReadDir(path)
 	if err != nil {
 		return -1, -1, err
@@ -92,7 +96,7 @@ func tree(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount int, 
 			continue
 		}
 
-		fc, dc, err := tree(cmd, fmt.Sprintf("%s/%s", path, d.Name()), append(dirAncestors, dinfo))
+		fc, dc, err := treedfs(cmd, fmt.Sprintf("%s/%s", path, d.Name()), append(dirAncestors, dinfo))
 		if err != nil {
 			return -1, -1, err
 		}
