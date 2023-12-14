@@ -5,6 +5,5 @@ type TreeElem struct {
 	fcount       int
 	dcount       int
 	isLastElem   bool
-	isDummyEntry bool
-	DummyName    string
+	isPrefixElem bool
 }

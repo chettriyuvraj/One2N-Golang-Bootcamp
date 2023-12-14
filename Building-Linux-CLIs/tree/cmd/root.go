@@ -56,7 +56,7 @@ func tree(cmd *cobra.Command, args []string) {
 		ancestors := []TreeElem{}
 
 		if ff {
-			ancestors = append(ancestors, TreeElem{isDummyEntry: true, DummyName: strings.Join(args, "")})
+			ancestors = append(ancestors, TreeElem{isPrefixElem: true, Name: strings.Join(args, "")})
 			n := len(path)
 			/* Edge case - remove trailing '/' */
 			if path[n-1] == '/' {
@@ -99,7 +99,7 @@ func treedfs(cmd *cobra.Command, path string, dirAncestors []TreeElem) (TreeElem
 
 		isLastElem := i == len(direntries)-1
 		child := TreeElem{Name: d.Name(), isLastElem: isLastElem}
-		printDirEntry(cmd, d, isLastElem, dirAncestors)
+		printDirEntry(cmd, child, dirAncestors)
 
 		if !d.IsDir() {
 			parent.fcount += 1
@@ -122,13 +122,13 @@ func treedfs(cmd *cobra.Command, path string, dirAncestors []TreeElem) (TreeElem
 
 /**** Print Helpers ****/
 
-func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncestors []TreeElem) {
+func printDirEntry(cmd *cobra.Command, te TreeElem, dirAncestors []TreeElem) {
 	var dName strings.Builder
 
 	fmt.Fprintf(cmd.OutOrStdout(), "\n")
 
 	for _, di := range dirAncestors {
-		if !di.isDummyEntry {
+		if !di.isPrefixElem {
 			if di.isLastElem {
 				fmt.Fprintf(cmd.OutOrStdout(), " ")
 			} else {
@@ -143,17 +143,17 @@ func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncest
 		}
 
 		if ff {
-			dName.WriteString(di.DummyName)
-			if di.DummyName[len(di.DummyName)-1] != '/' {
+			dName.WriteString(di.Name)
+			if di.Name[len(di.Name)-1] != '/' {
 				dName.WriteString("/")
 			}
 		}
 
 	}
 
-	dName.WriteString(d.Name())
+	dName.WriteString(te.Name)
 
-	if isLastElem {
+	if te.isLastElem {
 		fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshafthalf, hline, hline, dName.String())
 		return
 	}
@@ -199,8 +199,8 @@ func filterDirs(de []os.DirEntry) []os.DirEntry {
 }
 
 func (d TreeElem) String() string {
-	if !d.isDummyEntry {
+	if !d.isPrefixElem {
 		return fmt.Sprintf("%s ", d.Name)
 	}
-	return fmt.Sprintf("%s ", d.DummyName)
+	return fmt.Sprintf("%s ", d.Name)
 }
