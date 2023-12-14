@@ -123,42 +123,41 @@ func treedfs(cmd *cobra.Command, path string, dirAncestors []TreeElem) (TreeElem
 /**** Print Helpers ****/
 
 func printDirEntry(cmd *cobra.Command, te TreeElem, dirAncestors []TreeElem) {
-	var dName strings.Builder
+	var sb strings.Builder
 
 	fmt.Fprintf(cmd.OutOrStdout(), "\n")
 
-	for _, di := range dirAncestors {
-		if !di.isPrefixElem {
-			if di.isLastElem {
-				fmt.Fprintf(cmd.OutOrStdout(), " ")
-			} else {
-				fmt.Fprintf(cmd.OutOrStdout(), "%s", vline)
-			}
-			fmt.Fprintf(cmd.OutOrStdout(), "   ")
+	for _, ancestor := range dirAncestors {
 
-			if ff {
-				dName.WriteString(di.Name + "/")
+		if ancestor.isPrefixElem && ff {
+			sb.WriteString(ancestor.Name)
+			if ancestor.Name[len(ancestor.Name)-1] != '/' {
+				sb.WriteString("/")
 			}
 			continue
 		}
 
+		if ancestor.isLastElem {
+			fmt.Fprintf(cmd.OutOrStdout(), " ")
+		} else {
+			fmt.Fprintf(cmd.OutOrStdout(), "%s", vline)
+		}
+
+		fmt.Fprintf(cmd.OutOrStdout(), "   ")
 		if ff {
-			dName.WriteString(di.Name)
-			if di.Name[len(di.Name)-1] != '/' {
-				dName.WriteString("/")
-			}
+			sb.WriteString(ancestor.Name + "/")
 		}
 
 	}
 
-	dName.WriteString(te.Name)
+	sb.WriteString(te.Name)
 
 	if te.isLastElem {
-		fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshafthalf, hline, hline, dName.String())
+		fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshafthalf, hline, hline, sb.String())
 		return
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshaft, hline, hline, dName.String())
+	fmt.Fprintf(cmd.OutOrStdout(), "%s%s%s %s", vshaft, hline, hline, sb.String())
 }
 
 func printfiledircount(cmd *cobra.Command, fcount, dcount int) {
