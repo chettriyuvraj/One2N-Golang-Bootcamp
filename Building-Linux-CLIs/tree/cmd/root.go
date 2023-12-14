@@ -53,10 +53,10 @@ func tree(cmd *cobra.Command, args []string) {
 	for i, path := range args {
 
 		/** Pre-processing **/
-		ancestors := []DirInfo{}
+		ancestors := []TreeElem{}
 
 		if ff {
-			ancestors = append(ancestors, DirInfo{isDummyEntry: true, DummyName: strings.Join(args, "")})
+			ancestors = append(ancestors, TreeElem{isDummyEntry: true, DummyName: strings.Join(args, "")})
 			n := len(path)
 			/* Edge case - remove trailing '/' */
 			if path[n-1] == '/' {
@@ -65,14 +65,15 @@ func tree(cmd *cobra.Command, args []string) {
 		}
 
 		fmt.Fprintf(cmd.OutOrStdout(), "%s", path)
-		fc, dc, err := treedfs(cmd, path, ancestors)
+		te, err := treedfs(cmd, path, ancestors)
 		if err != nil {
 			fmt.Fprintf(cmd.OutOrStdout(), "  [error opening dir]")
 			fcount, dcount = 0, 0
 			break
 		}
-		fcount += fc
-		dcount += dc + 1
+
+		fcount += te.fcount
+		dcount += te.dcount + 1
 
 		if i != len(args)-1 {
 			fmt.Fprintf(cmd.OutOrStdout(), "\n")
@@ -82,10 +83,12 @@ func tree(cmd *cobra.Command, args []string) {
 	printfiledircount(cmd, fcount, dcount)
 }
 
-func treedfs(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount int, dcount int, err error) {
+func treedfs(cmd *cobra.Command, path string, dirAncestors []TreeElem) (TreeElem, error) {
+	parent := TreeElem{Name: path}
+
 	direntries, err := os.ReadDir(path)
 	if err != nil {
-		return -1, -1, err
+		return TreeElem{}, err
 	}
 
 	if df {
@@ -95,30 +98,31 @@ func treedfs(cmd *cobra.Command, path string, dirAncestors []DirInfo) (fcount in
 	for i, d := range direntries {
 
 		isLastElem := i == len(direntries)-1
-		dinfo := DirInfo{dir: d, isLastElem: isLastElem}
+		child := TreeElem{Name: d.Name(), isLastElem: isLastElem}
 		printDirEntry(cmd, d, isLastElem, dirAncestors)
 
 		if !d.IsDir() {
-			fcount += 1
+			parent.fcount += 1
 			continue
 		}
 
-		fc, dc, err := treedfs(cmd, fmt.Sprintf("%s/%s", path, d.Name()), append(dirAncestors, dinfo))
+		grandchild, err := treedfs(cmd, fmt.Sprintf("%s/%s", path, d.Name()), append(dirAncestors, child))
 		if err != nil {
-			return -1, -1, err
+			return grandchild, err
 		}
-		fcount += fc
-		dcount += dc + 1
+
+		parent.fcount += grandchild.fcount
+		parent.dcount += grandchild.dcount + 1
 	}
 
-	return fcount, dcount, nil
+	return parent, nil
 }
 
 /***** Helpers *****/
 
 /**** Print Helpers ****/
 
-func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncestors []DirInfo) {
+func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncestors []TreeElem) {
 	var dName strings.Builder
 
 	fmt.Fprintf(cmd.OutOrStdout(), "\n")
@@ -133,7 +137,7 @@ func printDirEntry(cmd *cobra.Command, d os.DirEntry, isLastElem bool, dirAncest
 			fmt.Fprintf(cmd.OutOrStdout(), "   ")
 
 			if ff {
-				dName.WriteString(di.dir.Name() + "/")
+				dName.WriteString(di.Name + "/")
 			}
 			continue
 		}
@@ -194,9 +198,9 @@ func filterDirs(de []os.DirEntry) []os.DirEntry {
 	return dirs
 }
 
-func (d DirInfo) String() string {
+func (d TreeElem) String() string {
 	if !d.isDummyEntry {
-		return fmt.Sprintf("%s ", d.dir.Name())
+		return fmt.Sprintf("%s ", d.Name)
 	}
 	return fmt.Sprintf("%s ", d.DummyName)
 }

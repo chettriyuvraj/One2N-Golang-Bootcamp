@@ -1,9 +1,9 @@
 package cmd
 
-import "io/fs"
-
-type DirInfo struct {
-	dir          fs.DirEntry
+type TreeElem struct {
+	Name         string
+	fcount       int
+	dcount       int
 	isLastElem   bool
 	isDummyEntry bool
 	DummyName    string
